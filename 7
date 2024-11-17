@@ -1,0 +1,27 @@
+
+% HPF using rectangular window
+wp = 0.8 * pi; % Passband edge frequency 
+ws = 0.7 * pi; % Stopband edge frequency 
+wc = (ws + wp) / 2; % Cutoff frequency
+dw = abs(ws - wp); % Transition width for HPF 
+M = ceil(1.8 * pi / dw) + 1; % No. of filter coefficients to be odd
+n = linspace(0, M - 1, M); % Sample points 
+hd = zeros(1, length(n));
+% Desired impulse response of HPF
+hd = (sin(pi * (n - (M - 1) / 2)) ./ (pi * (n - (M - 1) / 2))) - (sin(wc * (n - (M - 1) / 2)) ./ (pi * (n - (M - 1) / 2)));
+hd((M - 1) / 2 + 1) = 1 - (wc / pi); % Center value using L'Hôpital's Rule
+% Rectangular window function
+WI = ones(1, length(n));
+h = hd .* WI; % Linear phase FIR highpass filter coefficients
+% Frequency response of the high-pass filter
+[H, w] = freqz(h, 1, 1024); % Frequency-domain samples 
+wN = w / (2 * pi); % Normalized angular frequency
+HN = abs(H) / max(abs(H)); % Normalized magnitude values
+% Plot the frequency response
+figure;
+plot(wN, 20 * log10(HN), 'r');
+grid;
+xlabel('\bf Normalized Frequency ---->');
+ylabel('\bf Normalized Magnitude Response (dB) ---->');
+title('\bf Highpass Filter Designed with Rectangular Window Function');
+
