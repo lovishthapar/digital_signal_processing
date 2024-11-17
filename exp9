@@ -1,0 +1,29 @@
+
+Ap = input('enter pass band ripple(db): '); % 0.2 pass band
+ripple
+As = input('enter stop band ripple(db): '); % 40 stop band
+ripple
+fp = input('enter pass band frequency(Hz): '); % 2000 pass
+band frequency
+fs = input('enter stop band frequency(Hz): '); % 3500 stop
+band frequency
+Sf = input('enter sampling frequency(Hz): '); % 8000 sampling
+frequency
+% Convert specifications to linear scale
+ds = 10^(-0.05 * As);
+dp = 10^(-0.05 * Ap);
+% Normalized frequencies
+wp = (2 * fp) / Sf;
+ws = (2 * fs) / Sf;
+% Calculate the filter order and cutoff frequency
+N1 = 0.5 * log10((1 / ds ^ 2 - 1) / (1 / dp ^ 2 - 1)) / log10
+(ws / wp);
+N = ceil(N1);
+wc = wp / ((1 / dp ^ 2 - 1) ^ (1 / (2 * N)));
+% Design the Butterworth filter
+[b, a] = butter(N, wc, 'low');
+% Use zp2tf to verify transfer function
+[z, p, k] = butter(N, wc, 'low'); % Get zero-pole-gain
+representation
+[b_zp, a_zp] = zp2tf(z, p, k); % Convert to transfer function
+form
