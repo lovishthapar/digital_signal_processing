@@ -1,0 +1,47 @@
+% AIM: To design FIR BAND pass filter using Kaiser window with the user input
+% specifications for pass band range, transition width, pass band ripple,
+% stop band attenuation, and sampling frequency
+% Name: Balkirat Singh
+% Roll.no: 102206273           Group No.-3EC9
+
+% Bandpass Linear Phase FIR Filter Design using Kaiser Window Specifications
+delta_s = 0.001; % Given stopband ripple
+delta_p = 0.01;  % Given passband ripple
+dw = 0.2 * pi;   % Given transition bandwidth
+delta = min(delta_s, delta_p);
+A = -20 * log10(delta); % Attenuation in dB
+if A > 50
+    B = 0.1102 * (A - 8.7);
+elseif A >= 21
+    B = 0.5842 * ((A - 21)^0.4) + 0.07886 * (A - 21);
+else
+    B = 0;
+end
+% Calculate filter order M (ensuring it is odd)
+M = ceil((A - 8) / (2.285 * dw)) + 1;
+Am = floor((M - 1) / 2);  % Ensure Am is an integer
+% Define cutoff frequencies for band-pass filter
+wc1 = 0.7 * pi; % Upper cutoff frequency
+wc2 = 0.3 * pi; % Lower cutoff frequency
+n = linspace(0, M - 1, M); % Sample points
+% Calculate ideal band-pass filter impulse response
+hd1 = sin(wc1 * (n - Am)) ./ (pi * (n - Am));
+hd1(Am + 1) = 0.7; % Adjust at center point using L'Hôpital's Rule
+hd2 = sin(wc2 * (n - Am)) ./ (pi * (n - Am));
+hd2(Am + 1) = 0.3; % Adjust at center point using L'Hôpital's Rule
+% Apply the Kaiser window to the ideal impulse response
+kaiser_window = besseli(0, B * sqrt(1 - ((n - Am) / Am).^2)) / besseli(0, B);
+h1 = hd1 .* kaiser_window;
+h2 = hd2 .* kaiser_window;
+h = h1 - h2; % Band-pass filter impulse response
+% Frequency response of the band-pass filter
+[H, w] = freqz(h, 1, 1024);
+wN = w / pi; % Normalized frequency
+H_mag = abs(H) / max(abs(H)); % Normalized magnitude
+% Plot the frequency response
+figure;
+plot(wN, 20 * log10(H_mag), 'r');
+grid on;
+xlabel('\bf\omega (Normalized w.r.t. \pi) ----->');
+ylabel('\bf20*log_{10} |H(w)| (dB) (Normalized)');
+title('\bfBandpass Filter Designed with Kaiser Window');
