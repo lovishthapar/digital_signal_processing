@@ -1,0 +1,19 @@
+wp=0.2*pi;
+ws=0.3*pi;
+wc=(ws+wp)/2;
+dw=(ws-wp);
+M=ceil(6.1*pi/dw)+1;
+n=0:M-1;
+hd=zeros(1,length(n));
+hd=sin(wc.*(n-(M-1)/2))./((pi.*(n-(M-1)/2)));
+hd(1,(M-1)/2+1)=(wc/pi);
+Wt=ones(1,length(n));
+h=hd.*Wt;
+[H,w]=freqz(h,1,1024);
+wN=w./(2*pi);
+HN=abs(H)./max(abs(H));
+plot(wN,20.*log10(HN),'r');
+grid
+xlabel('\bf Normalized frequency----->')
+ylabel('\bf Normalized Magnitude response(dB)----->')
+title('\bf Lowpass Filter designed with rectangular Window Function(Tuhin 102206114)')
