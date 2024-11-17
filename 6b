@@ -1,0 +1,31 @@
+wp=0.2*pi;
+ws=0.3*pi;
+wc=(ws+wp)/2;
+dw=(ws-wp);
+M=ceil(6.1*pi/dw)+2;
+n=linspace(0,M-1,M);
+hd=zeros(1,length(n));
+hd=sin(wc.*(n-(M-1)/2))./((pi.*(n-(M-1)/2)));
+hd(1,((M-1)/2)+1)=(wc/pi);
+Wt=zeros(1,M);
+t=(0:0:1:M-1);
+for k=0:(M-1)/2
+    Wt(1,k+1)=2*k/(M-1);
+end
+for k=((M-1)/2)+1:(M-1)
+    Wt(1,k+1)=2*((M-1)-k)/(M-1);
+end
+stem(t,Wt,'m')
+legend('102206114')
+grid
+figure
+h=hd.*Wt;
+[H,w]=freqz(h,1,1024);
+wn=w./(2*pi);
+Hn=abs(H)./max(abs(H));
+plot(wn,20.*log10(Hn),'r');
+grid
+xlabel('\bf Normalized freq---->')
+ylabel('\bf Normalized Magnitude Response(dB)----->')
+title('\bf Lowpass Filter Designed with Rectangular Window Function')
+legend('102206114')
